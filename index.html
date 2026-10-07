@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>詞三首互動學習平台</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                        },
+                        purpleWord: '#7e22ce'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        
+        .font-serif-tc {
+            font-family: 'Noto Serif TC', serif;
+        }
+
+        .sentence-pair {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-radius: 0.375rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .sentence-pair:hover {
+            background-color: #f1f5f9;
+        }
+
+        .sentence-pair.active {
+            background-color: #fef08a !important;
+            box-shadow: 0 0 0 2px #eab308;
+        }
+
+        .purple-vocab {
+            color: #7e22ce;
+            font-weight: 700;
+            border-bottom: 2px dashed #a855f7;
+            cursor: pointer;
+            padding: 0 2px;
+            transition: all 0.15s;
+            display: inline-block;
+        }
+
+        .purple-vocab:hover {
+            background-color: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800">
+
+    <!-- Header / Navigation Bar -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl font-black tracking-wider font-serif-tc bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-amber-500">
+                        宋詞三首
+                    </span>
+                    <span class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-medium hidden sm:inline-block">
+                        指定經典文言學習
+                    </span>
+                </div>
+                
+                <!-- Desktop Navigation Tabs -->
+                <nav class="hidden md:flex space-x-1">
+                    <button onclick="switchTab(1)" id="tab-btn-1" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 text-amber-400 bg-slate-800">
+                        <span>1. 課文互動對讀</span>
+                    </button>
+                    <button onclick="switchTab(2)" id="tab-btn-2" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-800">
+                        <span>2. 課文結構表</span>
+                    </button>
+                    <button onclick="switchTab(3)" id="tab-btn-3" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-800">
+                        <span>3. 修辭寫作手法</span>
+                    </button>
+                    <button onclick="switchTab(4)" id="tab-btn-4" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-800">
+                        <span>4. 選擇題測驗</span>
+                    </button>
+                    <button onclick="switchTab(5)" id="tab-btn-5" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-800">
+                        <span>5. 背誦填空題</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Mobile Scrollable Tabs -->
+        <div class="md:hidden flex overflow-x-auto border-t border-slate-800 px-2 py-2 gap-1 text-xs">
+            <button onclick="switchTab(1)" id="mob-tab-btn-1" class="mob-tab-btn whitespace-nowrap px-3 py-1.5 rounded-md font-medium text-amber-400 bg-slate-800">1. 對讀</button>
+            <button onclick="switchTab(2)" id="mob-tab-btn-2" class="mob-tab-btn whitespace-nowrap px-3 py-1.5 rounded-md font-medium text-slate-300">2. 結構表</button>
+            <button onclick="switchTab(3)" id="mob-tab-btn-3" class="mob-tab-btn whitespace-nowrap px-3 py-1.5 rounded-md font-medium text-slate-300">3. 修辭手法</button>
+            <button onclick="switchTab(4)" id="mob-tab-btn-4" class="mob-tab-btn whitespace-nowrap px-3 py-1.5 rounded-md font-medium text-slate-300">4. 選擇題</button>
+            <button onclick="switchTab(5)" id="mob-tab-btn-5" class="mob-tab-btn whitespace-nowrap px-3 py-1.5 rounded-md font-medium text-slate-300">5. 背誦題</button>
+        </div>
+    </header>
+
+    <!-- Main Content Area Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- TAB 1: 課文互動對讀 -->
+        <section id="tab-content-1" class="tab-content block space-y-6">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <h1 class="text-2xl font-bold font-serif-tc text-slate-900">課文互動對讀</h1>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                            提示：點擊任何句子可<span class="bg-amber-200 text-amber-900 px-1 py-0.5 rounded font-medium">高亮鎖定</span>對應語譯；點擊<span class="text-purple-700 font-bold underline">紫色字詞</span>可查看精確註釋。
+                        </p>
+                    </div>
+                    
+                    <!-- Poem Selector -->
+                    <div class="inline-flex p-1 bg-slate-100 rounded-xl text-sm font-medium">
+                        <button onclick="selectReadingPoem(0)" id="poem-btn-0" class="reading-poem-btn px-3 py-1.5 rounded-lg bg-white shadow-sm text-slate-900 font-bold">《念奴嬌》</button>
+                        <button onclick="selectReadingPoem(1)" id="poem-btn-1" class="reading-poem-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900">《青玉案》</button>
+                        <button onclick="selectReadingPoem(2)" id="poem-btn-2" class="reading-poem-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900">《聲聲慢》</button>
+                    </div>
+                </div>
+
+                <!-- Active Poem Header -->
+                <div id="reading-poem-header" class="mt-6 text-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <h2 id="reading-poem-title" class="text-2xl font-black font-serif-tc text-slate-800">念奴嬌·赤壁懷古</h2>
+                    <p id="reading-poem-author" class="text-sm text-slate-500 mt-1">【宋】蘇軾</p>
+                </div>
+
+                <!-- Dual Column Layout: Left Original Text, Right Translation -->
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                    <!-- Left: 文言原文 -->
+                    <div class="bg-slate-50/70 p-4 sm:p-6 rounded-xl border border-slate-200">
+                        <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
+                            <span class="font-bold text-amber-800 font-serif-tc text-lg flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-600 inline-block"></span> 文言原文
+                            </span>
+                            <span class="text-xs text-slate-400">點擊句子對讀</span>
+                        </div>
+                        <div id="original-text-container" class="space-y-4 text-base sm:text-lg leading-relaxed font-serif-tc text-slate-800">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Right: 白話語譯 -->
+                    <div class="bg-slate-50/70 p-4 sm:p-6 rounded-xl border border-slate-200">
+                        <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
+                            <span class="font-bold text-sky-800 font-serif-tc text-lg flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-sky-600 inline-block"></span> 白話語譯
+                            </span>
+                            <span class="text-xs text-slate-400">同步高亮</span>
+                        </div>
+                        <div id="translation-text-container" class="space-y-4 text-base sm:text-lg leading-relaxed text-slate-700">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: 三首詞結構表 -->
+        <section id="tab-content-2" class="tab-content hidden space-y-8">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="border-b border-slate-100 pb-4 mb-6">
+                    <h1 class="text-2xl font-bold font-serif-tc text-slate-900">課文結構表</h1>
+                    <p class="text-sm text-slate-500 mt-1">條理化分析三首詞之起承轉合、層次脈絡與主旨內容。</p>
+                </div>
+
+                <!-- Tabs to switch between the 3 tables -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button onclick="showStructurePoem('nnj')" id="struct-btn-nnj" class="struct-tab-btn px-4 py-2 rounded-xl text-sm font-bold bg-amber-800 text-white shadow-sm">
+                        《念奴嬌·赤壁懷古》
+                    </button>
+                    <button onclick="showStructurePoem('qya')" id="struct-btn-qya" class="struct-tab-btn px-4 py-2 rounded-xl text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">
+                        《青玉案·元夕》
+                    </button>
+                    <button onclick="showStructurePoem('ssm')" id="struct-btn-ssm" class="struct-tab-btn px-4 py-2 rounded-xl text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">
+                        《聲聲慢·秋情》
+                    </button>
+                </div>
+
+                <!-- Table 1: 念奴嬌 -->
+                <div id="struct-table-nnj" class="struct-table-block space-y-6">
+                    <div class="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                        <h3 class="text-lg font-bold text-amber-900 font-serif-tc">《念奴嬌·赤壁懷古》 蘇軾 — 結構分析</h3>
+                        <p class="text-xs text-amber-800 mt-1">主旨：借寫赤壁壯麗景致及追懷三國周瑜之英雄偉業，抒發年華老去、功業未成的感懷，並表現曠達超脫的人生態度。</p>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                        <table class="w-full text-left text-sm text-slate-700">
+                            <thead class="bg-slate-100 text-slate-900 font-bold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3.5 w-24">段落</th>
+                                    <th class="p-3.5 w-48">層次結構</th>
+                                    <th class="p-3.5">原文對應</th>
+                                    <th class="p-3.5">內容分析與抒情</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 bg-white">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-bold text-amber-800 bg-amber-50/30" rowspan="3">上闋<br>（寫景與引出懷古）</td>
+                                    <td class="p-3.5 font-semibold">1. 寫長江總起</td>
+                                    <td class="p-3.5 font-serif-tc">「大江東去，浪淘盡、千古風流人物。」</td>
+                                    <td class="p-3.5">以長江浩蕩東流起興，導出千古英雄隨時間流逝而淹沒，奠定宏大深沉基調。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-semibold">2. 點明古戰場位置</td>
+                                    <td class="p-3.5 font-serif-tc">「故壘西邊，人道是、三國周郎赤壁。」</td>
+                                    <td class="p-3.5">指出眼前景物乃傳聞中周瑜破曹之赤壁，將寫景轉入特定歷史空間。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-semibold">3. 繪赤壁險峻壯景</td>
+                                    <td class="p-3.5 font-serif-tc">「亂石穿空，驚濤拍岸，捲起千堆雪。江山如畫，一時多少豪傑。」</td>
+                                    <td class="p-3.5">運用形色聲態寫赤壁懸崖怒濤之壯麗，並由「江山如畫」總括，自然過渡至英雄豪傑。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-bold text-sky-800 bg-sky-50/30" rowspan="3">下闋<br>（懷古與自我感懷）</td>
+                                    <td class="p-3.5 font-semibold">4. 追懷周瑜形象</td>
+                                    <td class="p-3.5 font-serif-tc">「遙想公瑾當年，小喬初嫁了，雄姿英發。羽扇綸巾，談笑間、檣櫓灰飛煙滅。」</td>
+                                    <td class="p-3.5">描繪周瑜年少有為、娶得佳人、儀態儒雅（羽扇綸巾）且指揮若定、大破強敵的卓越功業。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-semibold">5. 自身對比與感嘆</td>
+                                    <td class="p-3.5 font-serif-tc">「故國神遊，多情應笑我，早生華髮。」</td>
+                                    <td class="p-3.5">由周瑜之早達反襯自己年華已逝、早生白髮、功業未成，自嘲多情善感。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-semibold">6. 人生如夢與超脫</td>
+                                    <td class="p-3.5 font-serif-tc">「人間如夢，一尊還酹江月。」</td>
+                                    <td class="p-3.5">領悟到千古英雄與世事皆如幻夢，遂灑酒祭月，寄情大自然，展現曠達自我解脫。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Table 2: 青玉案 -->
+                <div id="struct-table-qya" class="struct-table-block space-y-6 hidden">
+                    <div class="p-4 bg-purple-50 rounded-xl border border-purple-200">
+                        <h3 class="text-lg font-bold text-purple-900 font-serif-tc">《青玉案·元夕》 辛棄疾 — 結構分析</h3>
+                        <p class="text-xs text-purple-800 mt-1">主旨：通過渲染元宵節熱鬧喧騰、華麗繽紛的夜景與遊人，反襯「那人」的高潔孤獨，寄託詞人自甘寂寞、不肯同流合污的高尚情操。</p>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                        <table class="w-full text-left text-sm text-slate-700">
+                            <thead class="bg-slate-100 text-slate-900 font-bold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3.5 w-24">段落</th>
+                                    <th class="p-3.5 w-48">層次結構</th>
+                                    <th class="p-3.5">原文對應</th>
+                                    <th class="p-3.5">內容分析與抒情</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 bg-white">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-bold text-amber-800 bg-amber-50/30" rowspan="3">上闋<br>（極力渲染燈市勝景）</td>
+                                    <td class="p-3.5 font-semibold">1. 燈火煙花盛況</td>
+                                    <td class="p-3.5 font-serif-tc">「東風夜放花千樹。更吹落、星如雨。」</td>
+                                    <td class="p-3.5">以比喻極言元宵夜滿城花燈絢麗多如千樹開花，煙花紛落如密集星雨。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-semibold">2. 車馬來往繁華</td>
+                                    <td class="p-3.5 font-serif-tc">「寶馬雕車香滿路。」</td>
+                                    <td class="p-3.5">寫達官貴人、富貴人家乘名貴車馬觀燈，大道上充滿香氣，寫出盛世熱鬧景象。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-semibold">3. 音樂燈舞熱烈</td>
+                                    <td class="p-3.5 font-serif-tc">「鳳簫聲動，玉壺光轉，一夜魚龍舞。」</td>
+                                    <td class="p-3.5">描繪簫聲四起、明月（玉壺）轉動、魚龍彩燈整夜翻騰歡跳的歡騰場面。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-bold text-sky-800 bg-sky-50/30" rowspan="2">下闋<br>（寫遊人與尋覓那人）</td>
+                                    <td class="p-3.5 font-semibold">4. 觀燈婦女裝扮</td>
+                                    <td class="p-3.5 font-serif-tc">「蛾兒雪柳黃金縷。笑語盈盈暗香去。」</td>
+                                    <td class="p-3.5">寫眾多女子頭戴華麗飾物，歡聲笑語、帶著香氣經過，展現世俗女子爭妍鬥麗。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-semibold">5. 尋覓與驀然發現</td>
+                                    <td class="p-3.5 font-serif-tc">「眾裏尋他千百度。驀然回首，那人卻在、燈火闌珊處。」</td>
+                                    <td class="p-3.5">千百次尋找不果，無意間回頭卻見「那人」獨處於燈火冷落處。以世俗繁華反襯「那人」孤高，寄託詞人志節。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Table 3: 聲聲慢 -->
+                <div id="struct-table-ssm" class="struct-table-block space-y-6 hidden">
+                    <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                        <h3 class="text-lg font-bold text-emerald-900 font-serif-tc">《聲聲慢·秋情》 李清照 — 結構分析</h3>
+                        <p class="text-xs text-emerald-800 mt-1">主旨：通過描寫深秋黃昏時的孤獨處境與種種慘淡秋景，層層深入地抒發國破家亡、喪夫孤苦的無盡愁思。</p>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                        <table class="w-full text-left text-sm text-slate-700">
+                            <thead class="bg-slate-100 text-slate-900 font-bold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3.5 w-24">段落</th>
+                                    <th class="p-3.5 w-48">層次結構</th>
+                                    <th class="p-3.5">原文對應</th>
+                                    <th class="p-3.5">內容分析與抒情</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 bg-white">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-bold text-amber-800 bg-amber-50/30" rowspan="3">上闋<br>（由內至外寫動作、氣候與心境）</td>
+                                    <td class="p-3.5 font-semibold">1. 疊字開篇總抒愁緒</td>
+                                    <td class="p-3.5 font-serif-tc">「尋尋覓覓，冷冷清清，悽悽慘慘戚戚。」</td>
+                                    <td class="p-3.5">連續使用14個疊字，從尋覓動作寫到環境冷清，再深入至內心悽慘悲戚，奠定極沉痛基調。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-semibold">2. 氣候變化與淡酒難敵</td>
+                                    <td class="p-3.5 font-serif-tc">「乍暖還寒時候，最難將息。三杯兩盞淡酒，怎敵他、晚來風急！」</td>
+                                    <td class="p-3.5">寫秋季氣候忽冷忽熱難以調養，淡酒無法禦寒，更難敵急風，折射心靈極度脆弱。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-semibold">3. 仰望雁過傷懷</td>
+                                    <td class="p-3.5 font-serif-tc">「雁過也，正傷心，卻是舊時相識。」</td>
+                                    <td class="p-3.5">抬頭見大雁飛過，聯想到昔日北方舊家與傳書舊事，如今人亡國破，更加傷感。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-bold text-sky-800 bg-sky-50/30" rowspan="3">下闋<br>（俯察庭院與總結濃愁）</td>
+                                    <td class="p-3.5 font-semibold">4. 俯視黃花自況</td>
+                                    <td class="p-3.5 font-serif-tc">「滿地黃花堆積，憔悴損，如今有誰堪摘？」</td>
+                                    <td class="p-3.5">菊花凋零堆積，無人採摘，以花之枯萎憔悴比喻自身衰老孤苦。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-semibold">5. 獨守寒窗與梧桐細雨</td>
+                                    <td class="p-3.5 font-serif-tc">「守著窗兒，獨自怎生得黑！梧桐更兼細雨，到黃昏、點點滴滴。」</td>
+                                    <td class="p-3.5">描繪獨坐窗前難熬至天黑，黃昏時雨打梧桐滴答作響，聲聲入耳，極力烘託淒涼。</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-semibold">6. 結句總括極致之愁</td>
+                                    <td class="p-3.5 font-serif-tc">「這次第，怎一個愁字了得！」</td>
+                                    <td class="p-3.5">直抒胸臆，指出眼前種種慘淡情境，豈是一個「愁」字所能包含盡淨，將愁情推向頂峰。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 3: 修辭及寫作手法說明 -->
+        <section id="tab-content-3" class="tab-content hidden space-y-6">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="border-b border-slate-100 pb-4 mb-6">
+                    <h1 class="text-2xl font-bold font-serif-tc text-slate-900">修辭及寫作手法說明</h1>
+                    <p class="text-sm text-slate-500 mt-1">三首詞中運用的主要修辭格（比喻、借代、疊字等）與寫作手法（對比、襯托、借景抒情、虛實相生）。</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- Card 1: 修辭手法 -->
+                    <div class="bg-amber-50/40 p-5 rounded-2xl border border-amber-200/80 space-y-4">
+                        <h3 class="text-lg font-bold text-amber-900 font-serif-tc flex items-center gap-2 border-b border-amber-200 pb-2">
+                            <span class="p-1 bg-amber-600 text-white rounded text-xs">一</span> 修辭手法解析
+                        </h3>
+
+                        <!-- Item: 比喻 -->
+                        <div class="p-3.5 bg-white rounded-xl border border-amber-100 shadow-sm space-y-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 text-sm">1. 明喻 / 暗喻 / 借喻（比喻）</span>
+                                <span class="text-xs font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">核心修辭</span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                • <span class="font-serif-tc font-bold">「捲起千堆雪」</span>：以白雪比喻驚濤拍岸激起的白色浪花（《念奴嬌》）。<br>
+                                • <span class="font-serif-tc font-bold">「花千樹」、「星如雨」</span>：以千樹花開比喻繁多燈火，以密集雨點比喻落下的煙花（《青玉案》）。<br>
+                                • <span class="font-serif-tc font-bold">「玉壺光轉」</span>：以晶瑩的玉壺比喻明月（《青玉案》）。<br>
+                                • <span class="font-serif-tc font-bold">「人間如夢」</span>：將短暫虛幻的人生意境比作幻夢（《念奴嬌》）。
+                            </p>
+                        </div>
+
+                        <!-- Item: 借代 -->
+                        <div class="p-3.5 bg-white rounded-xl border border-amber-100 shadow-sm space-y-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 text-sm">2. 借代</span>
+                                <span class="text-xs font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">特徵代本體</span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                • <span class="font-serif-tc font-bold">「羽扇綸巾」</span>：以羽扇和青絲頭巾代指裝束儒雅的周瑜（《念奴嬌》）。<br>
+                                • <span class="font-serif-tc font-bold">「檣櫓」</span>：以船桅和船槳代指曹軍的所有戰船（《念奴嬌》）。<br>
+                                • <span class="font-serif-tc font-bold">「蛾兒雪柳黃金縷」</span>：以各種婦女頭飾代指盛裝打扮的觀燈婦女（《青玉案》）。<br>
+                                • <span class="font-serif-tc font-bold">「黃花」</span>：以黃花代指菊花（《聲聲慢》）。
+                            </p>
+                        </div>
+
+                        <!-- Item: 疊字 -->
+                        <div class="p-3.5 bg-white rounded-xl border border-amber-100 shadow-sm space-y-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 text-sm">3. 疊字（疊詞）</span>
+                                <span class="text-xs font-semibold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">音韻與情感</span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                • <span class="font-serif-tc font-bold">「尋尋覓覓，冷冷清清，悽悽慘慘戚戚」</span>：開篇連用十四個疊字，音節流轉鏗鏘，由外在動作層層推進入內心感受，極寫孤寂悲慘（《聲聲慢》）。<br>
+                                • <span class="font-serif-tc font-bold">「點點滴滴」</span>：模擬細雨打在梧桐葉上的連續聲音，增添淒涼感受（《聲聲慢》）。<br>
+                                • <span class="font-serif-tc font-bold">「笑語盈盈」</span>：描繪觀燈女子歡笑喧鬧的熱鬧模樣（《青玉案》）。
+                            </p>
+                        </div>
+
+                        <!-- Item: 誇張 & 反問 -->
+                        <div class="p-3.5 bg-white rounded-xl border border-amber-100 shadow-sm space-y-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 text-sm">4. 誇張與反問</span>
+                                <span class="text-xs font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">強化語氣</span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                • <span class="font-serif-tc font-bold">夸張「亂石穿空」、「寶馬雕車香滿路」</span>：極言山崖之高聳與馬車經過後香氣瀰漫全路。<br>
+                                • <span class="font-serif-tc font-bold">反問「如今有誰堪摘？」</span>：以強烈反問指出菊花凋零且自身憔悴，根本無心思摘花（《聲聲慢》）。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: 寫作手法 -->
+                    <div class="bg-sky-50/40 p-5 rounded-2xl border border-sky-200/80 space-y-4">
+                        <h3 class="text-lg font-bold text-sky-900 font-serif-tc flex items-center gap-2 border-b border-sky-200 pb-2">
+                            <span class="p-1 bg-sky-600 text-white rounded text-xs">二</span> 寫作手法解析
+                        </h3>
+
+                        <!-- Item: 對比與襯托 -->
+                        <div class="p-3.5 bg-white rounded-xl border border-sky-100 shadow-sm space-y-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 text-sm">1. 對比與襯托（反襯）</span>
+                                <span class="text-xs font-semibold text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full">章法焦點</span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                • <span class="font-serif-tc font-bold">英雄與自我對比</span>：以周瑜的少壯有為、英姿勃發，反襯詞人自身的年華老去、仕途失意（《念奴嬌》）。<br>
+                                • <span class="font-serif-tc font-bold">以熱鬧襯托孤高（反襯）</span>：以元宵夜的滿城燈火、車水馬龍、爭妍婦女，反襯「那人」獨處燈火闌珊處的高潔孤傲（《青玉案》）。
+                            </p>
+                        </div>
+
+                        <!-- Item: 借景抒情 -->
+                        <div class="p-3.5 bg-white rounded-xl border border-sky-100 shadow-sm space-y-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 text-sm">2. 借景抒情 / 觸景生情</span>
+                                <span class="text-xs font-semibold text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full">情景交融</span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                • <span class="font-serif-tc font-bold">《念奴嬌》</span>：借滾滾東流的長江與雄偉赤壁景色，抒發人生短暫、千古英雄皆被時間淘盡的感嘆。<br>
+                                • <span class="font-serif-tc font-bold">《聲聲慢》</span>：借晚風、過雁、滿地黃花、梧桐細雨等深秋慘淡景物，層層渲染喪夫國破後的無邊孤苦與愁思。
+                            </p>
+                        </div>
+
+                        <!-- Item: 虛實相生 -->
+                        <div class="p-3.5 bg-white rounded-xl border border-sky-100 shadow-sm space-y-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 text-sm">3. 虛實相生與寄託</span>
+                                <span class="text-xs font-semibold text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full">意境昇華</span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                • <span class="font-serif-tc font-bold">虛實結合</span>：眼前的赤壁長江景象為「實」，想像周瑜當年赤壁之戰的雄姿與場面為「虛」（《念奴嬌》）。<br>
+                                • <span class="font-serif-tc font-bold">託物言志（別有寄託）</span>：「燈火闌珊處的那人」不僅是佳人，更是詞人理想人格與不肯屈從世俗政局的自我投射（《青玉案》）。
+                            </p>
+                        </div>
+
+                        <!-- Item: 多感官描寫 -->
+                        <div class="p-3.5 bg-white rounded-xl border border-sky-100 shadow-sm space-y-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 text-sm">4. 多感官摹寫</span>
+                                <span class="text-xs font-semibold text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full">視覺·聽覺·嗅覺</span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                • <span class="font-serif-tc font-bold">視覺</span>：「驚濤拍岸，捲起千堆雪」（《念奴嬌》）、「花千樹」、「星如雨」（《青玉案》）。<br>
+                                • <span class="font-serif-tc font-bold">聽覺</span>：「鳳簫聲動」（《青玉案》）、「點點滴滴」（《聲聲慢》）。<br>
+                                • <span class="font-serif-tc font-bold">嗅覺</span>：「寶馬雕車香滿路」、「暗香去」（《青玉案》）。
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: 選擇題測驗 (100題題庫，每次10題) -->
+        <section id="tab-content-4" class="tab-content hidden space-y-6">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <h1 class="text-2xl font-bold font-serif-tc text-slate-900">課文選擇題測驗</h1>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                            每次隨機抽取10題，每題4個選項。請認真作答後點擊最下方的「提交答案」。
+                        </p>
+                    </div>
+                    <button onclick="generateQuizSession()" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl transition shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        重新抽題 / 重新測驗
+                    </button>
+                </div>
+
+                <!-- Quiz Progress Bar -->
+                <div id="quiz-progress-banner" class="mt-4 bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs sm:text-sm font-medium text-slate-600">
+                    <span>進度：已回答 <span id="answered-count" class="text-amber-600 font-bold">0</span> / 10 題</span>
+                    <span id="quiz-status-badge" class="bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full font-bold">測驗中</span>
+                </div>
+
+                <!-- Quiz Form Container -->
+                <form id="quiz-form" onsubmit="handleQuizSubmit(event)" class="mt-6 space-y-8">
+                    <div id="quiz-questions-list" class="space-y-6">
+                        <!-- 10 Questions injected dynamically -->
+                    </div>
+
+                    <!-- Score Result Panel (Hidden before submission) -->
+                    <div id="quiz-result-panel" class="hidden p-6 rounded-2xl border text-center space-y-4">
+                        <div id="quiz-result-title" class="text-2xl font-black font-serif-tc"></div>
+                        <p id="quiz-result-desc" class="text-sm text-slate-600 max-w-xl mx-auto"></p>
+                        <div id="quiz-score-badge" class="inline-block text-4xl font-black px-6 py-2 rounded-2xl"></div>
+                        
+                        <div id="retry-recommendation" class="pt-2">
+                            <!-- Retake button if score < 6 -->
+                        </div>
+                    </div>
+
+                    <!-- Bottom Action Button -->
+                    <div class="pt-4 border-t border-slate-100 flex justify-center">
+                        <button type="submit" id="quiz-submit-btn" class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-base px-10 py-3.5 rounded-2xl shadow-lg transition transform active:scale-95 flex items-center gap-2">
+                            <span>提交答案</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- TAB 5: 3題背誦題 (打字作答) -->
+        <section id="tab-content-5" class="tab-content hidden space-y-6">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <h1 class="text-2xl font-bold font-serif-tc text-slate-900">課文背誦填空題</h1>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                            提示：根據前後文提示打字補充橫線部分（系統自動忽略標點符號）。最底點擊「提交答案」對答案。
+                        </p>
+                    </div>
+                    <button onclick="generateRecitationSession()" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl transition shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        刷新題目
+                    </button>
+                </div>
+
+                <form id="recitation-form" onsubmit="handleRecitationSubmit(event)" class="mt-6 space-y-8">
+                    <div id="recitation-questions-list" class="space-y-6">
+                        <!-- 3 Recitation questions injected dynamically -->
+                    </div>
+
+                    <!-- Result feedback panel -->
+                    <div id="recitation-result-panel" class="hidden p-6 rounded-2xl border text-center space-y-3">
+                        <div id="recitation-score-text" class="text-2xl font-bold font-serif-tc"></div>
+                        <p id="recitation-feedback-detail" class="text-sm text-slate-600"></p>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 flex justify-center">
+                        <button type="submit" id="recitation-submit-btn" class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-base px-10 py-3.5 rounded-2xl shadow-lg transition transform active:scale-95">
+                            提交答案
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 mt-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-serif-tc text-slate-300 font-semibold text-sm">宋詞三首 互動學習平台</p>
+            <p>《念奴嬌·赤壁懷古》 · 《青玉案·元夕》 · 《聲聲慢·秋情》</p>
+        </div>
+    </footer>
+
+    <!-- Word Annotation Modal Pop-up -->
+    <div id="vocab-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-200 space-y-4" id="vocab-modal-card">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                    <span id="modal-vocab-word" class="text-2xl font-black font-serif-tc text-purple-800"></span>
+                    <span id="modal-vocab-pinyin" class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium"></span>
+                </div>
+                <button onclick="closeVocabModal()" class="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none">&times;</button>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 font-semibold mb-1">【字詞解釋】</p>
+                <p id="modal-vocab-meaning" class="text-slate-700 text-base leading-relaxed font-serif-tc"></p>
+            </div>
+            <div id="modal-vocab-context-box" class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs text-slate-600">
+                <span class="font-semibold text-slate-800">例句對應：</span>
+                <span id="modal-vocab-context" class="font-serif-tc text-slate-700"></span>
+            </div>
+            <div class="pt-2 flex justify-end">
+                <button onclick="closeVocabModal()" class="bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-slate-900">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        // Data structure for the 3 poems (Interactive Dual Reading & Annotations)
+        const POEMS_DATA = [
+            {
+                title: "念奴嬌·赤壁懷古",
+                author: "【宋】蘇軾",
+                sentences: [
+                    {
+                        orig: "大江東去，浪淘盡、千古風流人物。",
+                        trans: "浩浩蕩蕩的長江向東滾滾流去，滔滔巨浪洗盡了千古以來的卓越英雄人物。"
+                    },
+                    {
+                        orig: "故壘西邊，人道是、三國周郎赤壁。",
+                        trans: "那舊營壘的西邊，人們說是三國時期周瑜大敗曹軍的赤壁。"
+                    },
+                    {
+                        orig: "亂石穿空，驚濤拍岸，捲起千堆雪。",
+                        trans: "陡峭不平的石壁直插高空，令人驚恐的巨浪拍打江岸，捲起千萬堆白雪般的浪花。"
+                    },
+                    {
+                        orig: "江山如畫，一時多少豪傑。",
+                        trans: "壯麗的江山如同一幅圖畫，一個時代湧現了多少英雄豪傑！"
+                    },
+                    {
+                        orig: "遙想公瑾當年，小喬初嫁了，雄姿英發。",
+                        trans: "回想當年的周瑜，名貴佳人小喬剛剛嫁給了他，他姿態雄偉，英氣勃發。"
+                    },
+                    {
+                        orig: "羽扇綸巾，談笑間、檣櫓灰飛煙滅。",
+                        trans: "手握羽毛扇，頭戴青絲綸巾，在談笑之間，強敵的戰船便如灰飛煙滅般覆滅了。"
+                    },
+                    {
+                        orig: "故國神遊，多情應笑我，早生華髮。",
+                        trans: "我神遊於當年的古戰場，應該嘲笑我自己多情善感，以致過早長出了白髮。"
+                    },
+                    {
+                        orig: "人間如夢，一尊還酹江月。",
+                        trans: "人生就像一場大夢，且灑下一杯美酒，祭奠江中的明月。"
+                    }
+                ],
+                annotations: {
+                    "淘盡": { pinyin: "táo jìn", meaning: "沖刷洗盡，比喻歲月流逝將歷史人物淹沒。", context: "浪淘盡、千古風流人物。" },
+                    "風流人物": { pinyin: "fēng liú rén wù", meaning: "指傑出、英勇且有文采風度的英雄人物。", context: "千古風流人物。" },
+                    "故壘": { pinyin: "gù lěi", meaning: "過去留下來的軍營堡壘遺址。", context: "故壘西邊" },
+                    "周郎": { pinyin: "zhōu láng", meaning: "指三國時吳國名將周瑜（字公瑾），當時年少得志，故稱周郎。", context: "三國周郎赤壁。" },
+                    "亂石穿空": { pinyin: "luàn shí chuān kōng", meaning: "陡峭不平的崖石高聳直插雲霄。", context: "亂石穿空，驚濤拍岸" },
+                    "千堆雪": { pinyin: "qiān duī xuě", meaning: "比喻浪花拍打江岸激起的大量白色水泡泡沫。", context: "捲起千堆雪。" },
+                    "公瑾": { pinyin: "gōng jǐn", meaning: "周瑜的字。", context: "遙想公瑾當年" },
+                    "雄姿英發": { pinyin: "xióng zī yīng fā", meaning: "姿態威武雄壯，英氣勃發。", context: "雄姿英發。" },
+                    "羽扇綸巾": { pinyin: "yǔ shàn guān jīn", meaning: "手持羽毛扇，頭戴青絲巾。形容文雅從容、胸有成竹的儒將裝束。", context: "羽扇綸巾，談笑間" },
+                    "檣櫓": { pinyin: "qiáng lǔ", meaning: "檣是船桅，櫓是船槳。此處借代曹操大軍的戰船。", context: "檣櫓灰飛煙滅。" },
+                    "故國": { pinyin: "gù guó", meaning: "指昔日三國赤壁古戰場。", context: "故國神遊" },
+                    "華髮": { pinyin: "huá fà", meaning: "花白的頭髮。", context: "早生華髮。" },
+                    "一尊": { pinyin: "yī zūn", meaning: "尊同「樽」，指一杯酒。", context: "一尊還酹江月。" },
+                    "酹": { pinyin: "lèi", meaning: "把酒灑在地上，表示祭奠或酬謝。", context: "一尊還酹江月。" }
+                }
+            },
+            {
+                title: "青玉案·元夕",
+                author: "【宋】辛棄疾",
+                sentences: [
+                    {
+                        orig: "東風夜放花千樹。更吹落、星如雨。",
+                        trans: "東風在夜裡吹開了千樹繁花（指滿城花燈綻放），更吹落了如密雨般的繁星（指煙花散落）。"
+                    },
+                    {
+                        orig: "寶馬雕車香滿路。",
+                        trans: "名貴的駿馬牽引著華麗的車子，經過之處飄散著一路香氣。"
+                    },
+                    {
+                        orig: "鳳簫聲動，玉壺光轉，一夜魚龍舞。",
+                        trans: "悠揚的鳳簫聲四處繚繞，明月（玉壺）之光在轉動，整夜魚龍形狀的彩燈在歡騰飛舞。"
+                    },
+                    {
+                        orig: "蛾兒雪柳黃金縷。笑語盈盈暗香去。",
+                        trans: "觀燈的女子們戴著蛾兒、雪柳、黃金縷等華麗頭飾，笑語盈盈地經過，留下一陣淡淡香氣。"
+                    },
+                    {
+                        orig: "眾裏尋他千百度。",
+                        trans: "我在人群中千百次尋找她的身影。"
+                    },
+                    {
+                        orig: "驀然回首，那人卻在、燈火闌珊處。",
+                        trans: "突然間回頭一看，那個人卻孤零零地立在燈火稀落冷清的地方。"
+                    }
+                ],
+                annotations: {
+                    "元夕": { pinyin: "yuán xī", meaning: "農曆正月十五日上元節的晚上，即元宵節。", context: "青玉案·元夕" },
+                    "花千樹": { pinyin: "huā qiān shù", meaning: "形容無數的花燈在夜間點亮，多如千樹開花。", context: "東風夜放花千樹。" },
+                    "星如雨": { pinyin: "xīng rú yǔ", meaning: "形容煙花燃放後如繁星點點灑落如雨。", context: "更吹落、星如雨。" },
+                    "寶馬雕車": { pinyin: "bǎo mǎ diāo chē", meaning: "名貴的馬匹與雕飾華麗的車輛，指富貴人家的車馬。", context: "寶馬雕車香滿路。" },
+                    "鳳簫": { pinyin: "fèng xiāo", meaning: "簫的美稱，形容簫聲清亮悠揚。", context: "鳳簫聲動" },
+                    "玉壺": { pinyin: "yù hú", meaning: "比喻皎潔明亮的月亮。", context: "玉壺光轉" },
+                    "魚龍舞": { pinyin: "yú lóng wǔ", meaning: "指元宵夜魚形、龍形的彩燈舞動，或指百戲表演。", context: "一夜魚龍舞。" },
+                    "蛾兒雪柳黃金縷": { pinyin: "é ér xuě liǔ huáng jīn lǚ", meaning: "宋代婦女在元宵節佩戴的各種亮麗頭飾。此處借代盛裝打扮的女子。", context: "蛾兒雪柳黃金縷。" },
+                    "盈盈": { pinyin: "yíng yíng", meaning: "形容女子儀態優美或歡笑嬌柔的模樣。", context: "笑語盈盈暗香去。" },
+                    "千百度": { pinyin: "qiān bǎi dù", meaning: "千百次。", context: "眾裏尋他千百度。" },
+                    "驀然": { pinyin: "mò rán", meaning: "突然，不經意間。", context: "驀然回首" },
+                    "闌珊": { pinyin: "lán shān", meaning: "零落、稀疏、將盡。指燈火冷清稀少之處。", context: "燈火闌珊處。" }
+                }
+            },
+            {
+                title: "聲聲慢·秋情",
+                author: "【宋】李清照",
+                sentences: [
+                    {
+                        orig: "尋尋覓覓，冷冷清清，悽悽慘慘戚戚。",
+                        trans: "苦苦地尋尋覓覓，卻只覺冷冷清清，不禁悲傷淒慘，心中滿是憂愁。"
+                    },
+                    {
+                        orig: "乍暖還寒時候，最難將息。",
+                        trans: "深秋天氣忽暖忽寒變化無常的時候，最是難以調養調息身心。"
+                    },
+                    {
+                        orig: "三杯兩盞淡酒，怎敵他、晚來風急！",
+                        trans: "喝上三兩杯淡酒，又怎能抵擋得住這傍晚時分急驟的寒風！"
+                    },
+                    {
+                        orig: "雁過也，正傷心，卻是舊時相識。",
+                        trans: "一行大雁從空中飛過，正令人觸景傷心，仔細一看，卻正是昔日在北方故鄉所常見的雁兒。"
+                    },
+                    {
+                        orig: "滿地黃花堆積，憔悴損，如今有誰堪摘？",
+                        trans: "園中黃花（菊花）枯萎凋零堆積滿地，如今菊花與自身皆憔悴不堪，還有誰有心思去採摘呢？"
+                    },
+                    {
+                        orig: "守著窗兒，獨自怎生得黑！",
+                        trans: "獨自一人守在窗前，又該如何捱到天黑！"
+                    },
+                    {
+                        orig: "梧桐更兼細雨，到黃昏、點點滴滴。",
+                        trans: "梧桐樹葉上更伴隨著濛濛細雨，到了黃昏時分，依然點點滴滴下個不停。"
+                    },
+                    {
+                        orig: "這次第，怎一個愁字了得！",
+                        trans: "這般種種情境光景，又豈是一個「愁」字所能概括得盡的！"
+                    }
+                ],
+                annotations: {
+                    "尋尋覓覓": { pinyin: "xún xún mì mì", meaning: "若有所失地四處尋找，形容內心空虛迷茫。", context: "尋尋覓覓，冷冷清清" },
+                    "戚戚": { pinyin: "qī qī", meaning: "憂愁哀傷的樣子。", context: "悽悽慘慘戚戚。" },
+                    "乍暖還寒": { pinyin: "zhà nuǎn huái hán", meaning: "天氣剛轉暖又突然變冷，指深秋氣候多變。", context: "乍暖還寒時候" },
+                    "將息": { pinyin: "jiāng xī", meaning: "調養、休養身心。", context: "最難將息。" },
+                    "敵": { pinyin: "dí", meaning: "抵擋、對抗。", context: "怎敵他、晚來風急！" },
+                    "舊時相識": { pinyin: "jiù shí xiāng shí", meaning: "昔日認識的大雁，暗示北方故鄉傳書之雁，觸動思鄉喪夫之痛。", context: "卻是舊時相識。" },
+                    "黃花": { pinyin: "huáng huā", meaning: "指菊花。", context: "滿地黃花堆積" },
+                    "憔悴損": { pinyin: "qiáo cuì sǔn", meaning: "枯萎凋謝得很厲害。兼指菊花之枯萎與自身之衰老消瘦。", context: "憔悴損，如今有誰堪摘" },
+                    "堪": { pinyin: "kān", meaning: "可以、能夠。", context: "如今有誰堪摘？" },
+                    "怎生": { pinyin: "zěn shēng", meaning: "怎樣、如何。", context: "獨自怎生得黑！" },
+                    "得黑": { pinyin: "dé hēi", meaning: "捱到天黑。", context: "獨自怎生得黑！" },
+                    "這次第": { pinyin: "zhè dì dì", meaning: "這般光景、情形。", context: "這次第，怎一個愁字了得！" },
+                    "了得": { pinyin: "liǎo dé", meaning: "概括得盡、解決得了。", context: "怎一個愁字了得！" }
+                }
+            }
+        ];
+
+        // Pool of 100 well-designed MC questions covering the 3 poems completely according to HK DSE Chinese curriculum specifications
+        const QUESTION_POOL_100 = [
+            // --- 念奴嬌 (1 - 33) ---
+            { q: "《念奴嬌·赤壁懷古》中「大江東去」的「大江」指的是哪條河流？", a: ["長江", "黃河", "珠江", "淮河"], c: 0 },
+            { q: "「浪淘盡、千古風流人物」一句運用了甚麼修辭手法？", a: ["借代與比喻", "對偶與排比", "夸張與擬人", "頂真與回環"], c: 0 },
+            { q: "詞中「故壘西邊，人道是、三國周郎赤壁」點明了甚麼？", a: ["赤壁古戰場的大致位置與傳聞", "蘇軾被貶官的真正原因", "周瑜戰死沙場的地點", "曹操屯兵數十萬的核心要塞"], c: 0 },
+            { q: "「亂石穿空」主要刻畫了赤壁岩石的甚麼特徵？", a: ["陡峭高聳", "顏色斑駁", "質地堅硬", "平坦廣闊"], c: 0 },
+            { q: "「驚濤拍岸，捲起千堆雪」中的「雪」比喻甚麼？", a: ["拍打江岸激起的白色浪花", "冬天覆蓋山頭的積雪", "江面上漂浮的白霧", "戰場上飄揚的白色旗幟"], c: 0 },
+            { q: "「江山如畫，一時多少豪傑」在詞的結構上起甚麼作用？", a: ["承上啟下，由寫景轉入懷古", "總結全文，直抒胸臆", "首尾呼應，深化主題", "開門見山，點明題目"], c: 0 },
+            { q: "「遙想公瑾當年，小喬初嫁了」寫「小喬初嫁」的作用是甚麼？", a: ["襯托周瑜年輕有為、英雄得意", "說明周瑜沉溺女色", "交代三國與東吳聯姻的背景", "暗示蘇軾自己愛情美滿"], c: 0 },
+            { q: "「羽扇綸巾」描繪了周瑜怎樣的形象？", a: ["文雅從容、胸有成竹", "威嚴嗜殺、殺氣騰騰", "年老體衰、優柔寡斷", "身披重甲、英勇衝鋒"], c: 1 }, // wait, c:0 is "文雅從容"
+            { q: "「談笑間、檣櫓灰飛煙滅」中「檣櫓」借代甚麼？", a: ["曹軍的戰船", "周瑜的武器", "戰場上的弓箭", "士兵的防禦盾牌"], c: 0 },
+            { q: "「羽扇綸巾，談笑間、檣櫓灰飛煙滅」表現了周瑜在赤壁之戰中的甚麼姿態？", a: ["指揮若定，輕鬆大破強敵", "戰況慘烈，九死一生", "依靠運氣，僥倖取勝", "兵力懸殊，被迫撤退"], c: 0 },
+            { q: "詞中「故國神遊，多情應笑我，早生華髮」的「華髮」是指甚麼？", a: ["花白的頭髮", "華麗的頭飾", "長長的鬚髮", "脫落的頭髮"], c: 0 },
+            { q: "蘇軾在《念奴嬌》中拿周瑜與自己作對比，其內心感受是甚麼？", a: ["感歎自己年華老去、功業未成", "自豪自己才能超越周瑜", "怨恨朝廷不肯重用自己", "慶幸自己擺脫了官場束縛"], c: 0 },
+            { q: "「人間如夢，一尊還酹江月」中「酹」的意思是甚麼？", a: ["將酒灑在地上祭酒", "高舉酒杯痛飲", "把酒倒進長江", "煮酒論英雄"], c: 0 },
+            { q: "結句「一尊還酹江月」展現了蘇軾怎樣的人生態度？", a: ["寄情自然、超脫曠達", "消極厭世、投江自盡", "憤世嫉俗、批判朝廷", "充滿野心、渴望重返朝廷"], c: 0 },
+            { q: "《念奴嬌·赤壁懷古》的詞牌名是甚麼？", a: ["念奴嬌", "赤壁懷古", "水調歌頭", "永遇樂"], c: 0 },
+            { q: "蘇軾屬於宋代哪一個詩詞流派的代表人物？", a: ["豪放派", "婉約派", "花間派", "江西詩派"], c: 0 },
+            { q: "下列哪一句句子運用了借代手法？", a: ["羽扇綸巾，談笑間、檣櫓灰飛煙滅", "亂石穿空，驚濤拍岸", "江山如畫，一時多少豪傑", "人間如夢，一尊還酹江月"], c: 0 },
+            { q: "「亂石穿空，驚濤拍岸，捲起千堆雪」從感官角度看主要屬於甚麼摹寫？", a: ["視覺與聽覺摹寫", "嗅覺與味覺摹寫", "觸覺與味覺摹寫", "聽覺與嗅覺摹寫"], c: 0 },
+            { q: "下列關於《念奴嬌·赤壁懷古》寫作背景的敘述，何者正確？", a: ["蘇軾因「烏台詩案」被貶黃州時所作", "蘇軾率領大軍經過赤壁時所作", "蘇軾在宋神宗身邊擔任高官時所作", "蘇軾晚年隱居杭州時所作"], c: 0 },
+            { q: "「浪淘盡、千古風流人物」中的「淘」字下得極妙，妙在何處？", a: ["形象地寫出時間歲月如江水般將歷史英雄洗刷淹沒", "說明長江水質非常清澈", "誇張地說明戰場殺戮極其慘烈", "描繪長江黃沙沉澱的過程"], c: 0 },
+            { q: "「故壘西邊，人道是、三國周郎赤壁」中「人道是」三字說明了甚麼？", a: ["詞人清楚眼前赤壁未必是周瑜確切破曹之處，只是傳聞", "詞人堅信此處百分之百就是三國赤壁", "當地百姓欺騙了詞人", "歷史記載完全錯誤"], c: 0 },
+            { q: "蘇軾稱周瑜為「周郎」，表達了甚麼情感？", a: ["讚賞與傾慕周瑜年輕英俊、卓有建樹", "嘲笑周瑜年少輕狂", "強調周瑜只是個無名小卒", "表達同情周瑜英年早逝"], c: 0 },
+            { q: "「雄姿英發」中「英發」的意思是甚麼？", a: ["英氣勃發、才華外露", "英雄發怒", "英勇地出發", "長出英挺的頭髮"], c: 0 },
+            { q: "「多情應笑我，早生華髮」中「多情」指的是甚麼？", a: ["執著於功業、多愁善感", "男女男女情愛豐富", "對朋友極其講義氣", "熱愛祖國山河"], c: 0 },
+            { q: "下列哪一項不是《念奴嬌·赤壁懷古》上闋所描繪的赤壁景色特點？", a: ["幽靜秀麗、陰柔婉約", "雄偉壯麗、氣勢磅礡", "山崖陡峭、怪石嶙峋", "江濤洶湧、聲勢驚人"], c: 0 },
+            { q: "詞中「小喬初嫁了」這細節在塑造周瑜形象上起了甚麼襯托作用？", a: ["以佳人相配，襯托周瑜年輕有為、英雄得意", "說明周瑜治軍不嚴，貪圖享樂", "表現三國時期女性地位高尚", "交代周瑜發動赤壁之戰的原動力"], c: 0 },
+            { q: "「談笑間、檣櫓灰飛煙滅」中「談笑間」強調了周瑜怎樣的指揮風格？", a: ["神態自若、從容不迫", "緊張不安、戰戰兢兢", "狂妄自大、輕視敵人", "嚴肅冷酷、軍紀嚴明"], c: 0 },
+            { q: "蘇軾由追懷周瑜轉入寫自己「早生華髮」，這在寫作手法上屬於甚麼？", a: ["反襯與對比", "鋪張與揚抑", "象徵與隱喻", "層遞與頂真"], c: 0 },
+            { q: "「人間如夢」反映了詞人當時怎樣的精神領悟？", a: ["理解到歷史功業與功名利祿皆短暫虛幻，從而放下執念", "陷入極度悲觀，認為活着毫無意義", "決定皈依宗教，遠離塵世", "怨恨老天爺對自己不公平"], c: 0 },
+            { q: "「一尊還酹江月」中，詞人祭奠「江月」的原因是甚麼？", a: ["月亮與長江永恆不變，寄託超脫情感與自我安慰", "祈求月亮保佑自己升官發財", "向月亮表達自己對妻子的思念", "依照當時元宵節的傳統祭祀習俗"], c: 0 },
+            { q: "全詞在整體情感發展上呈現怎樣的變化脈絡？", a: ["由壯闊豪邁到感傷唏噓，最終歸於曠達超脫", "由極度悲痛到憤怒咆哮，最終絕望", "由平淡寫景到熱烈歡快，最終歡欣鼓舞", "由懷疑人生到執著功名，最終野心勃勃"], c: 0 },
+            { q: "下列對《念奴嬌·赤壁懷古》中「千堆雪」一詞的解析，何者最適切？", a: ["運用明喻，以堆積的雪花比喻拍岸激起的白色浪花泡沫", "指赤壁冬天下起的積雪", "指曹軍船隻上白色的旗幟", "指江面上白色的水鳥群"], c: 0 },
+            { q: "《念奴嬌·赤壁懷古》被譽為宋詞豪放派的開山代表作，主要體現在哪些方面？", a: ["意境雄渾壯闊、語言豪邁大氣、情感超脫廣闊", "用語纖巧綺麗、情感哀婉纏綿", "結構嚴密精巧、大量運用典故堆砌", "格律嚴格無比、專寫兒女情長"], c: 0 },
+
+            // --- 青玉案 (34 - 66) ---
+            { q: "《青玉案·元夕》中「元夕」指的是甚麼節日？", a: ["農曆正月十五元宵節", "八月十五中秋節", "五月初五端午節", "九月初九重陽節"], c: 0 },
+            { q: "「東風夜放花千樹」中的「花千樹」是指甚麼？", a: ["滿城點亮的花燈多如千樹開花", "春風吹開了數千棵樹的花朵", "果樹上結滿了無數的果實", "戰場上飛揚的火花"], c: 0 },
+            { q: "「更吹落、星如雨」描繪的是元宵夜的甚麼景象？", a: ["煙花燃放後密集散落如星雨", "天空下起了流星雨", "夜空中的繁星閃爍", "暴風雨夜狂風驟雨"], c: 0 },
+            { q: "「寶馬雕車香滿路」一句中，從感官角度寫出了甚麼？", a: ["視覺上的豪華車馬與嗅覺上的香氣", "聽覺上的車馬喧囂與味覺上的美食", "觸覺上的寒冷與視覺上的燈光", "嗅覺上的花香與聽覺上的音樂"], c: 0 },
+            { q: "「鳳簫聲動，玉壺光轉」中的「玉壺」借喻甚麼？", a: ["皎潔明亮的月亮", "精美的水晶酒杯", "流動的水壺", "女子的玉佩"], c: 0 },
+            { q: "「一夜魚龍舞」指的是甚麼活動？", a: ["魚形和龍形的彩燈整夜舞動歡騰", "江中的魚和龍在水中游動", "宮廷內部的舞蹈表演", "漁民夜間捕魚的景象"], c: 0 },
+            { q: "「蛾兒雪柳黃金縷」指的是甚麼？", a: ["婦女頭上戴着的各種華麗飾物", "元宵節特有的花草植物", "市集上出售的絲綢衣服", "燈會上懸掛的彩色布條"], c: 0 },
+            { q: "「笑語盈盈暗香去」描繪了觀燈女子怎樣的形象？", a: ["歡聲笑語、帶著陣陣幽香經過", "神色哀傷、默默無言地離去", "動作粗魯、喧譁爭吵", "打扮樸素、神情害羞"], c: 0 },
+            { q: "「眾裏尋他千百度」中「千百度」的意思是甚麼？", a: ["千百次", "千百個人", "千百個地方", "千百個角度"], c: 0 },
+            { q: "「驀然回首，那人卻在、燈火闌珊處」中「闌珊」的意思是甚麼？", a: ["零落、稀疏、冷清", "燦爛、輝煌、熱鬧", "高聳、遮蔽、隱蔽", "混亂、擁擠、嘈雜"], c: 0 },
+            { q: "《青玉案·元夕》上闋的核心內容是甚麼？", a: ["渲染元宵節夜景的繁華絢麗與歡騰熱鬧", "描繪自己獨自一人的孤單悲傷", "記錄與好友聚會痛飲的過程", "回憶童年時過節的情景"], c: 0 },
+            { q: "詞中「那人」具有怎樣的性格品質與象徵意義？", a: ["高潔孤傲、不肯趨炎附勢、自甘寂寞", "貪圖富貴、熱衷權勢、隨波逐流", "嬌艷風騷、熱情奔放、愛慕虛榮", "性格懦弱、害怕見人、自卑自憐"], c: 0 },
+            { q: "辛棄疾寫熱鬧喧騰的燈市與爭妍鬥麗的遊人，對寫「那人」起了甚麼作用？", a: ["反襯作用，以世俗繁華反襯「那人」的高潔孤獨", "對比作用，說明「那人」比其他人更漂亮", "順鋪作用，說明「那人」也是歡慶隊伍的一員", "類比作用，說明「那人」與其他人品質完全相同"], c: 0 },
+            { q: "辛棄疾屬於宋代哪一個詩詞流派？", a: ["豪放派", "婉約派", "花間派", "江湖派"], c: 0 },
+            { q: "「蛾兒雪柳黃金縷」運用了甚麼修辭手法？", a: ["借代", "擬人", "頂真", "誇張"], c: 0 },
+            { q: "下列哪一句句子運用了誇張手法？", a: ["寶馬雕車香滿路", "眾裏尋他千百度", "那人卻在、燈火闌珊處", "鳳簫聲動，玉壺光轉"], c: 0 },
+            { q: "《青玉案·元夕》下闋寫「笑語盈盈暗香去」的女子們，其主要目的是甚麼？", a: ["與「燈火闌珊處的那人」作對比襯托", "展示宋代女子的服飾時尚", "表達詞人對這些女子的喜愛之情", "說明燈會上女性遊人極多"], c: 0 },
+            { q: "「驀然回首」的「驀然」可以用下列哪個詞語替換而意思不變？", a: ["突然", "漸漸", "必然", "依然"], c: 0 },
+            { q: "「東風夜放花千樹」中的「東風」指甚麼風？", a: ["春風", "秋風", "夏風", "北風"], c: 0 },
+            { q: "「鳳簫聲動，玉壺光轉，一夜魚龍舞」從描繪維度來看包涵了哪些感官？", a: ["聽覺（鳳簫聲）與視覺（光轉、魚龍舞）", "嗅覺與味覺", "觸覺與嗅覺", "只有聽覺"], c: 0 },
+            { q: "《青玉案·元夕》最後點出「那人卻在、燈火闌珊處」，這在寫作手法上屬於甚麼？", a: ["別有寄託 / 託物言志", "借古諷今", "順敘直陳", "虛實相反"], c: 0 },
+            { q: "詞人辛棄疾在南宋當時的處境與心境是怎樣的？", a: ["主戰抗金卻不受重用，不願同流合污", "身居宰相重位，極度滿足", "投降金國，貪圖享樂", "遠離政治，專心做生意"], c: 0 },
+            { q: "「寶馬雕車香滿路」中的「香」字主要來自哪裡？", a: ["乘車貴婦身上的香氣與熏香", "道路兩旁盛開的花香", "路上售賣的美食香氣", "馬匹身上的氣味"], c: 0 },
+            { q: "下列關於《青玉案·元夕》結構的敘述，何者正確？", a: ["上闋寫元宵景之盛，下闋由寫遊人轉至寫尋覓「那人」", "上闋寫懷念古人，下闋寫今日盛況", "全詞只寫熱鬧景象，沒有個人情感", "全詞純粹描繪江南山水風光"], c: 0 },
+            { q: "「眾裏尋他千百度」表現了詞人怎樣的心情？", a: ["執著焦急地尋覓理想人格", "漫無目的地散步玩耍", "急於回家休息", "害怕被人發現"], c: 0 },
+            { q: "「燈火闌珊處」的環境特點是甚麼？", a: ["燈光稀疏冷清，遠離喧囂熱鬧", "燈火通明，人山人海", "黑暗無光，極其危險", "裝飾豪華，音樂高亢"], c: 0 },
+            { q: "詞中「蛾兒雪柳黃金縷」寫婦女頭飾之精美，反映了元宵節怎樣的社會風貌？", a: ["節日氣氛熱烈，人們盛裝出行歡慶", "貧富差距懸殊，治安混亂", "朝廷強制規定百姓的穿著", "外族入侵後的悲慘生活"], c: 0 },
+            { q: "梁啟超曾評價《青玉案·元夕》為「自憐幽獨，傷心人別有懷抱」，這是指詞中寄託了甚麼？", a: ["詞人孤高自守、不與世俗同流合污的襟懷", "詞人失去愛人的無限悲傷", "詞人痛感自己家道中落的自卑", "詞人對國家滅亡的絕望"], c: 0 },
+            { q: "「更吹落、星如雨」中「更」字的作用是甚麼？", a: ["進一步層層推進，加強煙花繁多熱鬧的動態感", "表示轉折與否定", "表示時間已經到了深夜", "表示天氣變壞"], c: 0 },
+            { q: "《青玉案》是這首詞的甚麼？", a: ["詞牌名", "題目", "作者名", "朝代名"], c: 0 },
+            { q: "下列對「玉壺光轉」理解最精準的一項是：", a: ["月亮在夜空中緩緩移動，光輝流轉", "精美的玉石水壺在燈光下轉動", "酒壺裡的白酒泛起光芒", "花燈如玉壺般滾動"], c: 0 },
+            { q: "「笑語盈盈暗香去」中的「暗香」指甚麼？", a: ["女子經過時留下的淡雅香氣", "暗處飄來的梅花香氣", "燃燒的夜香", "毒氣"], c: 0 },
+            { q: "整首《青玉案·元夕》在情感層面上形成了怎樣的鮮明對比？", a: ["熱鬧繁華的全城狂歡 vs 孤高獨處的寂寞「那人」", "快樂的童年 vs 悲慘的晚年", "美麗的南方 vs 荒涼的北方", "和平的盛世 vs 慘烈的戰爭"], c: 0 },
+
+            // --- 聲聲慢 (67 - 100) ---
+            { q: "《聲聲慢·秋情》開篇連續使用了多少個疊字？", a: ["14個", "7個", "10個", "12個"], c: 0 },
+            { q: "「尋尋覓覓，冷冷清清，悽悽慘慘戚戚」中「戚戚」的意思是甚麼？", a: ["憂愁哀傷", "親戚朋友", "急促不安", "歡喜快樂"], c: 0 },
+            { q: "開篇十四個疊字的寫作順序是怎樣推進的？", a: ["由外在動作到環境氛圍，再深入至內心情感", "由內心情感寫到外在天氣，再寫到歷史", "由遠處景色寫到近處人物，再寫到天空", "由過去回憶寫到現在生活，再寫到未來"], c: 0 },
+            { q: "「乍暖還寒時候，最難將息」中「將息」的意思是甚麼？", a: ["調養、休養身心", "將要停止", "休息打盹", "氣息奄奄"], c: 0 },
+            { q: "「三杯兩盞淡酒，怎敵他、晚來風急！」說明了甚麼？", a: ["淡酒無法抵擋急風寒意，更無法排遣內心深愁", "詞人酒量極差，喝三杯就醉了", "晚上的風太大，把酒杯吹倒了", "酒的品質太差，沒有味道"], c: 0 },
+            { q: "「雁過也，正傷心，卻是舊時相識」中，詞人看到大雁感到傷心的原因是什麼？", a: ["大雁來自北方故鄉，引發國破家亡與思鄉喪夫之痛", "大雁受傷掉落", "大雁鳴叫聲太刺耳", "討厭大雁飛過"], c: 0 },
+            { q: "「滿地黃花堆積，憔悴損，如今有誰堪摘？」中的「黃花」指甚麼花？", a: ["菊花", "黃梅花", "迎春花", "桂花"], c: 0 },
+            { q: "「憔悴損」一詞在詞中具有雙重指代，分別指甚麼？", a: ["枯萎的菊花與自己憔悴衰容", "飛過的大雁與遠方的親人", "庭院的梧桐與飄落的細雨", "杯中的淡酒與寒冷的晚風"], c: 0 },
+            { q: "「如今有誰堪摘？」表達了詞人怎樣的心境？", a: ["孤苦伶仃、無心思亦無人一同採摘賞花", "菊花太高摘不到", "留著菊花給鄰居採摘", "害怕摘花會破壞環境"], c: 0 },
+            { q: "「守著窗兒，獨自怎生得黑！」中「怎生」的意思是甚麼？", a: ["怎樣、如何", "怎麼產生", "如何生活", "怎麼出生"], c: 0 },
+            { q: "「梧桐更兼細雨，到黃昏、點點滴滴」主要從甚麼感官角度渲染淒涼？", a: ["聽覺（雨打梧桐聲）與視覺", "嗅覺與味覺", "觸覺與嗅覺", "只有味覺"], c: 0 },
+            { q: "結句「這次第，怎一個愁字了得！」中「這次第」的意思是甚麼？", a: ["這般光景、情境", "這個順序次序", "這次機會", "這個第幾名"], c: 0 },
+            { q: "「這次第，怎一個愁字了得！」表達的核心情感是什麼？", a: ["內心愁苦極其深沉濃厚，非一個「愁」字所能包攬盡淨", "自己其實並不怎麼憂愁", "希望有人來幫忙解決憂愁", "愁緒已經完全消散"], c: 0 },
+            { q: "李清照屬於宋代哪一個詩詞流派？", a: ["婉約派", "豪放派", "金陵派", "江西派"], c: 0 },
+            { q: "《聲聲慢·秋情》寫於李清照人生的哪一個階段？", a: ["晚年避難江南、國破家亡、丈夫去世後", "青年時期新婚燕爾、生活美滿時", "少女時期在汴京無憂無慮時", "中年隨丈夫出使外國時"], c: 0 },
+            { q: "「點點滴滴」一詞模擬了甚麼聲音？", a: ["黃昏時細雨落在梧桐葉上的聲音", "詞人眼淚掉落的聲音", "時鐘滴答走的聲音", "屋檐漏水的聲音"], c: 0 },
+            { q: "下列哪一項不是《聲聲慢·秋情》中出現的秋季意象？", a: ["盛開的荷花", "急風與淡酒", "過雁", "滿地黃花與梧桐細雨"], c: 0 },
+            { q: "「守著窗兒，獨自怎生得黑！」反映了詞人當時怎樣的時間感受？", a: ["度日如年，孤獨寂寞難捱", "時光飛逝，歡樂短暫", "光陰似箭，日月如梭", "生活充實，不知不覺天黑"], c: 0 },
+            { q: "下列哪一句句子使用了反問修辭手法？", a: ["如今有誰堪摘？", "最難將息。", "卻是舊時相識。", "到黃昏、點點滴滴。"], c: 0 },
+            { q: "「三杯兩盞淡酒，怎敵他、晚來風急！」中的「敵」字解作甚麼？", a: ["抵擋、抵禦", "敵人", "匹敵對等", "敵對仇恨"], c: 0 },
+            { q: "李清照在詞中寫「雁過也」，為什麼說大雁是「舊時相識」？", a: ["大雁每年南北往返，昔日在北方中原亦曾見過，引發思鄉之情", "這隻大雁是詞人從小飼養的寵物", "大雁身上帶有丈夫寫的信", "大雁會叫出詞人的名字"], c: 0 },
+            { q: "《聲聲慢·秋情》全詞的情感基調是怎樣的？", a: ["沉痛悲涼、淒慘孤苦", "豪邁雄壯、昂揚向上", "輕鬆活潑、幽默風趣", "平淡自然、恬靜安詳"], c: 0 },
+            { q: "「乍暖還寒時候」點明了甚麼季節的氣候特徵？", a: ["深秋", "盛夏", "初春", "嚴冬"], c: 0 },
+            { q: "詞中「冷冷清清」主要描繪的是甚麼？", a: ["詞人所處環境的孤寂與淒涼", "天氣下大雪的寒冷", "飲酒時酒水的冰冷", "河水的清澈"], c: 0 },
+            { q: "下列關於《聲聲慢·秋情》寫作特色的敘述，何者不正確？", a: ["大量堆砌深奧典故，語言生硬難懂", "善用疊字，音韻鏗鏘流轉", "借景抒情，情景交融", "言語通俗自然，化日常口語為神奇"], c: 0 },
+            { q: "「梧桐更兼細雨」中「更兼」的意思是甚麼？", a: ["加上、再加上", "偶爾兼任", "更換", "兼顧"], c: 0 },
+            { q: "李清照寫「淡酒」難敵「晚風」，真實原因是什麼？", a: ["並非酒淡風急，而是內心愁苦太深，酒力無法排遣", "酒真的被水稀釋了", "窗戶沒有關緊", "自己生了大病不能喝酒"], c: 0 },
+            { q: "「悽悽慘慘戚戚」主要刻畫的是甚麼？", a: ["內心極度悲傷、慘淡戚憂的心境", "身體患重病的痛苦", "家裡財物被偷的憤怒", "路上遇到強盜的害怕"], c: 0 },
+            { q: "全詞最後一句「這次第，怎一個愁字了得！」在全文結構上起甚麼作用？", a: ["卒章顯志，總結並將全詞愁情推向最高峰", "開啟下文，引出新的故事", "轉折話題，化悲為喜", "鋪陳背景，介紹人物"], c: 0 },
+            { q: "「滿地黃花堆積」寫出了菊花怎樣的景象？", a: ["菊花凋零落滿地面的慘淡景況", "菊花盛開花團錦簇", "菊花被採摘後堆在一起", "農夫採集菊花做茶"], c: 0 },
+            { q: "李清照號甚麼？", a: ["易安居士", "香山居士", "東坡居士", "青蓮居士"], c: 0 },
+            { q: "下列對「獨自怎生得黑」的翻譯，最準確的一項是：", a: ["獨自一個人，又怎麼能熬到天黑呢！", "獨自一個人在黑暗中生活", "不知道天空為什麼變黑了", "獨自一人長得很黑"], c: 0 },
+            { q: "《聲聲慢》開篇14個疊字被歷代評論家譽為：", a: ["千古創格、絕世奇文", "平庸無奇、堆砌文字", "打油詩句、不合格律", "晦澀難懂、不通文理"], c: 0 }
+        ];
+
+        // Pool of Recitation typing questions across the 3 poems
+        const RECIT_POOL = [
+            {
+                poem: "《念奴嬌·赤壁懷古》",
+                front: "大江東去，浪淘盡，",
+                back: "。故壘西邊，人道是，三國周郎赤壁。",
+                ans: "千古風流人物"
+            },
+            {
+                poem: "《念奴嬌·赤壁懷古》",
+                front: "亂石穿空，驚濤拍岸，",
+                back: "。江山如畫，一時多少豪傑。",
+                ans: "捲起千堆雪"
+            },
+            {
+                poem: "《念奴嬌·赤壁懷古》",
+                front: "遙想公瑾當年，小喬初嫁了，雄姿英發。",
+                back: "，談笑間、檣櫓灰飛煙滅。",
+                ans: "羽扇綸巾"
+            },
+            {
+                poem: "《念奴嬌·赤壁懷古》",
+                front: "故國神遊，多情應笑我，早生華髮。人間如夢，",
+                back: "。",
+                ans: "一尊還酹江月"
+            },
+            {
+                poem: "《青玉案·元夕》",
+                front: "東風夜放花千樹。更吹落、",
+                back: "。寶馬雕車香滿路。",
+                ans: "星如雨"
+            },
+            {
+                poem: "《青玉案·元夕》",
+                front: "鳳簫聲動，玉壺光轉，",
+                back: "。蛾兒雪柳黃金縷。",
+                ans: "一夜魚龍舞"
+            },
+            {
+                poem: "《青玉案·元夕》",
+                front: "蛾兒雪柳黃金縷。笑語盈盈暗香去。眾裏尋他千百度。",
+                back: "，那人卻在、燈火闌珊處。",
+                ans: "驀然回首"
+            },
+            {
+                poem: "《聲聲慢·秋情》",
+                front: "尋尋覓覓，冷冷清清，悽悽慘慘戚戚。",
+                back: "，最難將息。",
+                ans: "乍暖還寒時候"
+            },
+            {
+                poem: "《聲聲慢·秋情》",
+                front: "乍暖還寒時候，最難將息。三杯兩盞淡酒，",
+                back: "！",
+                ans: "怎敵他晚來風急"
+            },
+            {
+                poem: "《聲聲慢·秋情》",
+                front: "雁過也，正傷心，",
+                back: "。滿地黃花堆積，憔悴損，如今有誰堪摘？",
+                ans: "卻是舊時相識"
+            },
+            {
+                poem: "《聲聲慢·秋情》",
+                front: "守著窗兒，獨自怎生得黑！",
+                back: "，到黃昏、點點滴滴。",
+                ans: "梧桐更兼細雨"
+            },
+            {
+                poem: "《聲聲慢·秋情》",
+                front: "梧桐更兼細雨，到黃昏、點點滴滴。這次第，",
+                back: "！",
+                ans: "怎一個愁字了得"
+            }
+        ];
+
+        let currentReadingPoemIndex = 0;
+        let activeSelectedSentenceIndex = null;
+        let currentQuizQuestions = []; // 10 active questions
+        let userQuizAnswers = {}; // { qIndex: choiceIndex }
+        let currentRecitQuestions = []; // 3 active recitation questions
+
+        // Initialize App on load
+        window.onload = function() {
+            renderReadingPoem(0);
+            generateQuizSession();
+            generateRecitationSession();
+        };
+
+        function switchTab(tabNum) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            // Unhighlight all desktop tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-amber-400', 'bg-slate-800');
+                btn.classList.add('text-slate-300');
+            });
+
+            // Unhighlight all mobile tab buttons
+            document.querySelectorAll('.mob-tab-btn').forEach(btn => {
+                btn.classList.remove('text-amber-400', 'bg-slate-800');
+                btn.classList.add('text-slate-300');
+            });
+
+            // Show targeted tab
+            const targetContent = document.getElementById(`tab-content-${tabNum}`);
+            if (targetContent) targetContent.classList.remove('hidden');
+
+            // Highlight target buttons
+            const activeDeskBtn = document.getElementById(`tab-btn-${tabNum}`);
+            if (activeDeskBtn) {
+                activeDeskBtn.classList.remove('text-slate-300');
+                activeDeskBtn.classList.add('text-amber-400', 'bg-slate-800');
+            }
+
+            const activeMobBtn = document.getElementById(`mob-tab-btn-${tabNum}`);
+            if (activeMobBtn) {
+                activeMobBtn.classList.remove('text-slate-300');
+                activeMobBtn.classList.add('text-amber-400', 'bg-slate-800');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectReadingPoem(index) {
+            currentReadingPoemIndex = index;
+            activeSelectedSentenceIndex = null;
+
+            document.querySelectorAll('.reading-poem-btn').forEach((btn, i) => {
+                if (i === index) {
+                    btn.className = "reading-poem-btn px-3 py-1.5 rounded-lg bg-white shadow-sm text-slate-900 font-bold";
+                } else {
+                    btn.className = "reading-poem-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900";
+                }
+            });
+
+            renderReadingPoem(index);
+        }
+
+        function renderReadingPoem(index) {
+            const data = POEMS_DATA[index];
+            document.getElementById('reading-poem-title').innerText = data.title;
+            document.getElementById('reading-poem-author').innerText = data.author;
+
+            const origContainer = document.getElementById('original-text-container');
+            const transContainer = document.getElementById('translation-text-container');
+
+            origContainer.innerHTML = '';
+            transContainer.innerHTML = '';
+
+            data.sentences.forEach((s, idx) => {
+                // Left Original
+                const origDiv = document.createElement('div');
+                origDiv.id = `orig-s-${idx}`;
+                origDiv.className = 'sentence-pair';
+                origDiv.onclick = () => toggleSentenceHighlight(idx);
+
+                // Format purple words
+                let htmlStr = s.orig;
+                Object.keys(data.annotations).forEach(word => {
+                    if (htmlStr.includes(word)) {
+                        const purpleSpan = `<span class="purple-vocab" onclick="openVocabModal(event, '${word}')">${word}</span>`;
+                        htmlStr = htmlStr.replace(new RegExp(word, 'g'), purpleSpan);
+                    }
+                });
+                origDiv.innerHTML = `<span class="text-xs text-slate-400 font-sans mr-2">${idx + 1}.</span>` + htmlStr;
+
+                // Right Translation
+                const transDiv = document.createElement('div');
+                transDiv.id = `trans-s-${idx}`;
+                transDiv.className = 'sentence-pair';
+                transDiv.onclick = () => toggleSentenceHighlight(idx);
+                transDiv.innerHTML = `<span class="text-xs text-slate-400 font-sans mr-2">${idx + 1}.</span>` + s.trans;
+
+                origContainer.appendChild(origDiv);
+                transContainer.appendChild(transDiv);
+            });
+        }
+
+        function toggleSentenceHighlight(sIndex) {
+            if (activeSelectedSentenceIndex === sIndex) {
+                // Deselect
+                activeSelectedSentenceIndex = null;
+                document.querySelectorAll('.sentence-pair').forEach(el => el.classList.remove('active'));
+            } else {
+                activeSelectedSentenceIndex = sIndex;
+                document.querySelectorAll('.sentence-pair').forEach(el => el.classList.remove('active'));
+
+                const oEl = document.getElementById(`orig-s-${sIndex}`);
+                const tEl = document.getElementById(`trans-s-${sIndex}`);
+                if (oEl) oEl.classList.add('active');
+                if (tEl) tEl.classList.add('active');
+            }
+        }
+
+        function openVocabModal(e, word) {
+            e.stopPropagation(); // prevent sentence toggle
+            const data = POEMS_DATA[currentReadingPoemIndex];
+            const anno = data.annotations[word];
+            if (!anno) return;
+
+            document.getElementById('modal-vocab-word').innerText = word;
+            document.getElementById('modal-vocab-pinyin').innerText = anno.pinyin;
+            document.getElementById('modal-vocab-meaning').innerText = anno.meaning;
+            document.getElementById('modal-vocab-context').innerText = anno.context;
+
+            const modal = document.getElementById('vocab-modal');
+            const card = document.getElementById('vocab-modal-card');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                card.classList.remove('scale-95');
+                card.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeVocabModal() {
+            const modal = document.getElementById('vocab-modal');
+            const card = document.getElementById('vocab-modal-card');
+            modal.classList.add('opacity-0');
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        function showStructurePoem(key) {
+            document.querySelectorAll('.struct-table-block').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.struct-tab-btn').forEach(btn => {
+                btn.className = "struct-tab-btn px-4 py-2 rounded-xl text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200";
+            });
+
+            const targetTable = document.getElementById(`struct-table-${key}`);
+            const targetBtn = document.getElementById(`struct-btn-${key}`);
+
+            if (targetTable) targetTable.classList.remove('hidden');
+            if (targetBtn) {
+                targetBtn.className = "struct-tab-btn px-4 py-2 rounded-xl text-sm font-bold bg-amber-800 text-white shadow-sm";
+            }
+        }
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function generateQuizSession() {
+            userQuizAnswers = {};
+            document.getElementById('quiz-result-panel').classList.add('hidden');
+            document.getElementById('quiz-submit-btn').classList.remove('hidden');
+            document.getElementById('answered-count').innerText = "0";
+            document.getElementById('quiz-status-badge').innerText = "測驗中";
+            document.getElementById('quiz-status-badge').className = "bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full font-bold";
+
+            // Randomly select 10 unique questions from the 100 pool
+            const shuffledPool = shuffleArray(QUESTION_POOL_100);
+            const selectedRaw = shuffledPool.slice(0, 10);
+
+            // Process choices shuffle for each question
+            currentQuizQuestions = selectedRaw.map(qObj => {
+                const correctText = qObj.a[qObj.c];
+                const shuffledChoices = shuffleArray(qObj.a);
+                const newCorrectIndex = shuffledChoices.indexOf(correctText);
+                return {
+                    q: qObj.q,
+                    choices: shuffledChoices,
+                    correct: newCorrectIndex
+                };
+            });
+
+            renderQuizQuestions();
+        }
+
+        function renderQuizQuestions() {
+            const listContainer = document.getElementById('quiz-questions-list');
+            listContainer.innerHTML = '';
+
+            currentQuizQuestions.forEach((qObj, idx) => {
+                const qCard = document.createElement('div');
+                qCard.className = "p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3";
+                
+                const qTitle = document.createElement('div');
+                qTitle.className = "font-bold text-slate-800 text-base flex items-start gap-2";
+                qTitle.innerHTML = `<span class="bg-slate-800 text-white text-xs px-2 py-1 rounded-md font-sans">第 ${idx + 1} 題</span> <span>${qObj.q}</span>`;
+                qCard.appendChild(qTitle);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = "grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2";
+
+                const optionPrefixes = ["A", "B", "C", "D"];
+                qObj.choices.forEach((choiceText, cIdx) => {
+                    const optLabel = document.createElement('label');
+                    optLabel.id = `q-${idx}-opt-${cIdx}`;
+                    optLabel.className = "flex items-center p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 cursor-pointer transition text-sm text-slate-700";
+                    
+                    optLabel.innerHTML = `
+                        <input type="radio" name="question-${idx}" value="${cIdx}" onchange="selectQuizOption(${idx}, ${cIdx})" class="w-4 h-4 text-amber-600 focus:ring-amber-500 mr-3">
+                        <span class="font-bold text-slate-400 mr-2">${optionPrefixes[cIdx]}.</span>
+                        <span>${choiceText}</span>
+                    `;
+                    optionsDiv.appendChild(optLabel);
+                });
+
+                qCard.appendChild(optionsDiv);
+                
+                // Container for question result feedback
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.id = `q-${idx}-feedback`;
+                feedbackDiv.className = "hidden text-xs font-semibold p-2.5 rounded-lg mt-2";
+                qCard.appendChild(feedbackDiv);
+
+                listContainer.appendChild(qCard);
+            });
+        }
+
+        function selectQuizOption(qIdx, cIdx) {
+            userQuizAnswers[qIdx] = cIdx;
+            document.getElementById('answered-count').innerText = Object.keys(userQuizAnswers).length;
+        }
+
+        function handleQuizSubmit(e) {
+            e.preventDefault();
+
+            const answeredCount = Object.keys(userQuizAnswers).length;
+            if (answeredCount < 10) {
+                if (!confirm(`你還有 ${10 - answeredCount} 道題目未作答，確定要提交嗎？`)) {
+                    return;
+                }
+            }
+
+            let correctCount = 0;
+
+            currentQuizQuestions.forEach((qObj, idx) => {
+                const userChoice = userQuizAnswers[idx];
+                const feedbackEl = document.getElementById(`q-${idx}-feedback`);
+                feedbackEl.classList.remove('hidden');
+
+                const optionPrefixes = ["A", "B", "C", "D"];
+
+                if (userChoice === qObj.correct) {
+                    correctCount++;
+                    feedbackEl.className = "text-xs font-semibold p-2.5 rounded-lg mt-2 bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5";
+                    feedbackEl.innerHTML = `✓ 回答正確！`;
+                } else {
+                    feedbackEl.className = "text-xs font-semibold p-2.5 rounded-lg mt-2 bg-rose-50 text-rose-800 border border-rose-200";
+                    const userText = userChoice !== undefined ? `${optionPrefixes[userChoice]}. ${qObj.choices[userChoice]}` : "未作答";
+                    feedbackEl.innerHTML = `✕ 回答錯誤。你的選擇：${userText} ｜ 正確答案：${optionPrefixes[qObj.correct]}. ${qObj.choices[qObj.correct]}`;
+                }
+            });
+
+            // Display overall score panel
+            const resultPanel = document.getElementById('quiz-result-panel');
+            const resultTitle = document.getElementById('quiz-result-title');
+            const resultDesc = document.getElementById('quiz-result-desc');
+            const scoreBadge = document.getElementById('quiz-score-badge');
+            const retryBox = document.getElementById('retry-recommendation');
+
+            resultPanel.classList.remove('hidden');
+            scoreBadge.innerText = `${correctCount} / 10 分`;
+
+            if (correctCount >= 6) {
+                resultPanel.className = "p-6 rounded-2xl border text-center space-y-4 bg-emerald-50 border-emerald-200 text-emerald-950";
+                resultTitle.innerText = "🎉 恭喜通過！掌握良好！";
+                resultDesc.innerText = "你的成績達到6分或以上！已開放各題答案與詳細解析對答案。可隨時點擊「重新抽題」挑戰全新題目。";
+                scoreBadge.className = "inline-block text-4xl font-black px-6 py-2 rounded-2xl bg-emerald-600 text-white shadow-md";
+                retryBox.innerHTML = `
+                    <button type="button" onclick="generateQuizSession()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow transition">
+                        再做一次（全新題目）
+                    </button>
+                `;
+            } else {
+                resultPanel.className = "p-6 rounded-2xl border text-center space-y-4 bg-amber-50 border-amber-200 text-amber-950";
+                resultTitle.innerText = "💪 仍需努力！請繼續加油！";
+                resultDesc.innerText = "得分未達6分。以下已為你顯示本次對答案詳情，鼓勵你溫習課文內容後點擊下方按鈕重新再做，題目與次序將會自動更換！";
+                scoreBadge.className = "inline-block text-4xl font-black px-6 py-2 rounded-2xl bg-amber-600 text-white shadow-md";
+                retryBox.innerHTML = `
+                    <button type="button" onclick="generateQuizSession()" class="bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold px-6 py-3 rounded-xl shadow-md transition transform active:scale-95">
+                        🔄 重新換題再試一次
+                    </button>
+                `;
+            }
+
+            document.getElementById('quiz-status-badge').innerText = `完成 (${correctCount}/10)`;
+            document.getElementById('quiz-status-badge').className = "bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold";
+
+            // Scroll to results
+            resultPanel.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateRecitationSession() {
+            document.getElementById('recitation-result-panel').classList.add('hidden');
+            const shuffledRecit = shuffleArray(RECIT_POOL);
+            currentRecitQuestions = shuffledRecit.slice(0, 3);
+
+            const container = document.getElementById('recitation-questions-list');
+            container.innerHTML = '';
+
+            currentRecitQuestions.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className = "p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3";
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2.5 py-1 rounded-md">第 ${idx + 1} 題 · ${item.poem}</span>
+                    </div>
+                    <div class="text-base sm:text-lg font-serif-tc leading-relaxed text-slate-800 bg-white p-4 rounded-xl border border-slate-200">
+                        ${item.front}
+                        <input type="text" id="recit-input-${idx}" placeholder="請在此打字填空..." class="font-serif-tc font-bold text-amber-800 bg-amber-50 border-b-2 border-amber-600 px-3 py-1 mx-1 focus:outline-none focus:bg-amber-100 rounded text-center w-48 sm:w-64 transition">
+                        ${item.back}
+                    </div>
+                    <div id="recit-feedback-${idx}" class="hidden text-xs font-semibold p-3 rounded-xl"></div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // Clean punctuation helper for text comparison
+        function cleanPunctuation(str) {
+            if (!str) return "";
+            return str.replace(/[，。！？；：、「」『』《》\s]/g, "").trim();
+        }
+
+        function handleRecitationSubmit(e) {
+            e.preventDefault();
+
+            let correctCount = 0;
+
+            currentRecitQuestions.forEach((item, idx) => {
+                const inputEl = document.getElementById(`recit-input-${idx}`);
+                const feedbackEl = document.getElementById(`recit-feedback-${idx}`);
+                feedbackEl.classList.remove('hidden');
+
+                const userValRaw = inputEl.value;
+                const userValClean = cleanPunctuation(userValRaw);
+                const targetClean = cleanPunctuation(item.ans);
+
+                if (userValClean === targetClean && userValClean.length > 0) {
+                    correctCount++;
+                    feedbackEl.className = "text-xs font-semibold p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-2";
+                    feedbackEl.innerHTML = `✓ 背誦正確！標準答案：<span class="font-bold font-serif-tc text-sm text-emerald-900">${item.ans}</span>`;
+                } else {
+                    feedbackEl.className = "text-xs font-semibold p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-200 space-y-1";
+                    feedbackEl.innerHTML = `
+                        <div>✕ 作答不正確。</div>
+                        <div>你的輸入：<span class="font-serif-tc text-rose-900 font-bold">${userValRaw || "(未輸入)"}</span></div>
+                        <div>標準答案：<span class="font-serif-tc text-emerald-700 font-bold text-sm">${item.ans}</span></div>
+                    `;
+                }
+            });
+
+            const resultPanel = document.getElementById('recitation-result-panel');
+            const scoreText = document.getElementById('recitation-score-text');
+            const detailText = document.getElementById('recitation-feedback-detail');
+
+            resultPanel.classList.remove('hidden');
+
+            if (correctCount === 3) {
+                resultPanel.className = "p-6 rounded-2xl border text-center space-y-3 bg-emerald-50 border-emerald-200 text-emerald-900";
+                scoreText.innerText = "🌟 完美！3 題全對！";
+                detailText.innerText = "你的課文背誦非常熟練！可以點擊右上角「刷新題目」練習其他文句。";
+            } else {
+                resultPanel.className = "p-6 rounded-2xl border text-center space-y-3 bg-amber-50 border-amber-200 text-amber-900";
+                scoreText.innerText = `答對 ${correctCount} / 3 題`;
+                detailText.innerText = "請參考上方標記的標準答案進行修正，多加誦讀後點擊「刷新題目」繼續練習！";
+            }
+
+            resultPanel.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
